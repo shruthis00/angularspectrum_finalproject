@@ -18,13 +18,13 @@ dTT=1/100e6;
 dXX=(elPos(2)-elPos(1))*1e-3;
 
 a=32e-3; % source radius
-f0=4e6; % center frequency of pulse
+f0=2.35e6; % center frequency of pulse
 omega0 = f0*2*pi;
 c0=1500; % speed of sound
 lambda=c0/f0; % wavelength
 dX=lambda/5; dY=dX;% grid spacing
 
-dZ=dX*5;
+dZ=dX*8;
 dT=dX/5/c0; %2*pi/omega0/20;
 k=omega0/c0;
 beta=3.5; % nonlinear coefficient
@@ -95,17 +95,15 @@ figure(2), plot(imag(squeeze(afilt3d(round(end/2),round(end/2),:))))
 figure(3), imagesc(real(abl(:,:,round(end/2))))
 
 %% MARCH ALONG PROPAGATION AXIS %%
-apaz=apa;   % apaz is pressure in Z
-zvec=dZ;    % zvec is currently just the step in Z
+apaz=apa;
+zvec=dZ;    % zvec is currently just the step in
 dZa=dZ;
 cc=1;
 while(sum(zvec)<prop_dist)
-    disp(sum(zvec))
-    disp(prop_dist)
     %N*dZ/dT*max(max(max(apaz)))
     if(N*dZ/dT*max(max(max(apaz)))>0.1) %stability criterion
       disp('Stability criterion violated, retrying with smaller step size')
-      dZ=0.075*dT/max(max(max(apaz)))/N % adjusting dZ by .75
+      dZ=0.075*dT/max(max(max(apaz)))/N     % adjusting dZ by .75
       cc=1;
       apaz=apa;
       zvec=dZ;
@@ -117,14 +115,13 @@ while(sum(zvec)<prop_dist)
     zvec(cc)=dZ; sum(zvec);
     disp(['Propagation distance = ' num2str(sum(zvec)) ' m'])
 
-    apaz=march_asr2(apaz,dZ,dT,N,HH,abl,afilt3d);   % this is some application (like fullwave) that does the thing
-    figure(1), imagesc(t,yaxis,(squeeze(apaz(round(nX/2),:,:)))), xlabel('t (s)'), ylabel('m in y'), title([num2str(sum(zvec)) 'm']), colorbar
+    apaz=march_asr2(apaz,dZ,dT,N,HH,abl,afilt3d);
+    figure(1), imagesc(t,yaxis,(squeeze(apaz(round(nX/2),:,:)))), xlabel('t (s)'), ylabel('m'), title([num2str(sum(zvec)) 'm']), colorbar
     %str = ['print -djpeg movie/yimg_'  sprintf('%0.4d',cc) '.jpg']; eval(str)
-    figure(2), imagesc(t,xaxis,(squeeze(apaz(:,round(nY/2),:)))), xlabel('t (s)'), ylabel('m in x'), title([num2str(sum(zvec)) 'm']), colorbar
+    figure(2), imagesc(t,xaxis,(squeeze(apaz(:,round(nY/2),:)))), xlabel('t (s)'), ylabel('m'), title([num2str(sum(zvec)) 'm']), colorbar
     %str = ['print -djpeg movie/ximg_'  sprintf('%0.4d',cc) '.jpg']; eval(str)
     figure(3), plot(taxis,squeeze(apaz(round(nX/2),round(nY/2),:))), xlabel('t (s)'), ylabel('Pa'), title( [num2str(sum(zvec)) 'm'])
     %str = ['print -djpeg movie/timg_'  sprintf('%0.4d',cc) '.jpg']; eval(str)
-    figure(4), mesh(apaz(:,:,200));
     drawnow
     cc=cc+1;
 end

@@ -1,0 +1,13 @@
+clear
+clc
+close all
+
+load('source_pressure_4C1_30V_M1_9_100MHz_single.mat')
+
+figure()
+for i = 1:length(t)
+    imagesc(squeeze(pressure(i,:,:)));
+    pause(0.01)
+    title(t(i))
+end
+
