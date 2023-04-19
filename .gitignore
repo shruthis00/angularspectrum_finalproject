@@ -1,0 +1,6 @@
+# ignore all asv files (bc why)
+*.asv
+
+# ignore the output of the pressure files
+*.mat
+/output/
